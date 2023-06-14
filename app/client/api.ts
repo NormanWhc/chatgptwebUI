@@ -30,7 +30,7 @@ export interface LLMConfig {
 export interface ChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
-
+  recentMessage?: string;
   onUpdate?: (message: string, chunk: string) => void;
   onFinish: (message: string) => void;
   onError?: (err: Error) => void;
@@ -100,6 +100,7 @@ export const api = new ClientApi();
 
 export function getHeaders() {
   // const accessStore = useAccessStore.getState();
+  const userStore = useUserStore.getState();
   let headers: Record<string, string> = {
     "Content-Type": "application/json",
     "x-requested-with": "XMLHttpRequest",
@@ -120,7 +121,6 @@ export function getHeaders() {
   //     ACCESS_CODE_PREFIX + accessStore.accessCode,
   //   );
   // }
-  headers.token =
-    "eyJraWQiOiJrSWFvNTI1alprVU1QNzN4IiwiYWxnIjoiUlM1MTIifQ.eyJpc3MiOiJjb20uaGV0LmFpIiwic3ViIjoiMiIsImV4cCI6MTY4NjczMDU1OCwicGF5bG9hZCI6IntcInVzZXJJZFwiOjIsXCJ1c2VyQWNjb3VudFwiOlwiaGFpc2VuTFwiLFwianRpXCI6XCJmODdiMWU5ZC1hZDBhLTQ0ZDUtOGNjNS1jY2NhYzk3NjMwNmFcIn0ifQ.HygL0pIRgv9Wkbhe6sCrcJZ1qo1HMQdKp9V-wnZRQdEGzQs15UHn_VNlIQgFytn5WS1bCC2Xia9R9_GTCw_KcENZqOhXbabVVNghtA2zu_041KZ7cVyq1dqp4l8K-cWQOfz7zJgAiXLEiGePWGdi6KEDvZ1pFvoudqDC3FhqFSlPP5mqVBHA4mqfvsmDY-O7uXAZiJ7Csh1YO5DP-Ksw-fydPI35qKSE5HUkmN3JOBkmpI1GpsRUwufnzJM9lrlU87A26Bndm0Vi10Imuoie0qj4D9W1lbPhKle_N-Hck8R7BZrcKNZ6YQzy1QQWhvR0rhhXYJ5YoC4aTF8BLESHyw";
+  headers.token = userStore.sessionToken;
   return headers;
 }

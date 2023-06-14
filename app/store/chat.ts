@@ -281,6 +281,7 @@ export const useChatStore = create<ChatStore>()(
         api.llm.chat({
           messages: sendMessages,
           config: { ...modelConfig, stream: true },
+          recentMessage: sendMessages[sendMessages.length - 1].content,
           onUpdate(message) {
             botMessage.streaming = true;
             if (message) {

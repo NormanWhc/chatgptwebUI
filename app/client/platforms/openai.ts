@@ -8,12 +8,13 @@ import {
   fetchEventSource,
 } from "@fortaine/fetch-event-source";
 import { prettyObject } from "@/app/utils/format";
+import { message } from "antd";
 
 export class ChatGPTApi implements LLMApi {
   public ChatPath = "ai/web/chatgpt/chat";
   public UsagePath = "dashboard/billing/usage";
   public SubsPath = "dashboard/billing/subscription";
-
+  // const chatStore = useChatStore();
   path(path: string): string {
     // let openaiUrl = useAccessStore.getState().openaiUrl;
     let openaiUrl = "//oven-api.hetscene.com";
@@ -26,13 +27,28 @@ export class ChatGPTApi implements LLMApi {
 
   extractMessage(res: any) {
     return res.data.content ?? "";
+    // return res ?? "";
   }
 
   async chat(options: ChatOptions) {
+    // console.log(options.messages)
     const messages = options.messages.map((v) => ({
       role: v.role,
       content: v.content,
     }));
+    let history: any = [];
+    for (let num = 0; num < messages.length - 2; num++) {
+      if (messages[num].role == "user") {
+        history.push({
+          qusestion: messages[num].content,
+          answer: messages[num + 1].content,
+        });
+        num = num + 2;
+      }
+    }
+
+    console.log(history, "history");
+    const recentMessage = options.recentMessage;
 
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
@@ -43,18 +59,13 @@ export class ChatGPTApi implements LLMApi {
     };
 
     const requestPayload = {
-      history: [
-        {
-          answer: "",
-          question: "",
-        },
-      ],
-      prompt: "hello",
+      history: history,
+      prompt: recentMessage,
       useType: 3,
       userAssistantId: 1,
     };
 
-    console.log("[Request] openai payload: ", requestPayload);
+    console.log("[Request] openai payload: ", requestPayload, options.messages);
 
     // const shouldStream = !!options.config.stream;
     const shouldStream = false;
