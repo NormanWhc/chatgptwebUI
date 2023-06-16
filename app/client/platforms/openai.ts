@@ -1,6 +1,11 @@
 import { REQUEST_TIMEOUT_MS } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
-
+import {
+  useAccessStore,
+  useAppConfig,
+  useChatStore,
+  useUserStore,
+} from "@/app/store";
+import { useRouter } from "next/navigation";
 import { ChatOptions, getHeaders, LLMApi, LLMUsage } from "../api";
 import Locale from "../../locales";
 import {
@@ -9,15 +14,15 @@ import {
 } from "@fortaine/fetch-event-source";
 import { prettyObject } from "@/app/utils/format";
 import { message } from "antd";
-
 export class ChatGPTApi implements LLMApi {
   public ChatPath = "ai/web/chatgpt/chat";
   public UsagePath = "dashboard/billing/usage";
   public SubsPath = "dashboard/billing/subscription";
+
   // const chatStore = useChatStore();
   path(path: string): string {
     // let openaiUrl = useAccessStore.getState().openaiUrl;
-    let openaiUrl = "//oven-api.hetscene.com";
+    let openaiUrl = "//ai-api.hetos.cn/";
     console.log(openaiUrl, "openaiUrl");
     if (openaiUrl.endsWith("/")) {
       openaiUrl = openaiUrl.slice(0, openaiUrl.length - 1);
@@ -31,6 +36,7 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
+    // const router = useRouter();
     // console.log(options.messages)
     const messages = options.messages.map((v) => ({
       role: v.role,
@@ -173,6 +179,9 @@ export class ChatGPTApi implements LLMApi {
 
         const resJson = await res.json();
         const message = this.extractMessage(resJson);
+        if (resJson.code == 10102) {
+          this.router.replace("/");
+        }
         console.log(resJson, message, "stream");
         options.onFinish(message);
       }

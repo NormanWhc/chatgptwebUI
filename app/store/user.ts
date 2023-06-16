@@ -22,7 +22,7 @@ export interface UserStore {
   inviteCode: string;
   updateInviteCode: (inviteCode: string) => void;
 
-  sessionToken: string | null;
+  sessionToken: string;
   validateSessionToken: () => boolean;
   updateSessionToken: (sessionToken: string) => void;
 
@@ -34,7 +34,7 @@ export const useUserStore = create<UserStore>()(
     (set, get) => ({
       email: "",
       inviteCode: "",
-      sessionToken: null,
+      sessionToken: "",
       subscription: undefined,
 
       updateEmail(email: string) {
@@ -60,7 +60,7 @@ export const useUserStore = create<UserStore>()(
 
       clearData() {
         set((state) => ({
-          sessionToken: null,
+          sessionToken: "",
           email: "",
         }));
       },

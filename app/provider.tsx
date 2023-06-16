@@ -20,9 +20,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!["/"].includes(pathname)) {
         return router.replace("/");
       }
-    } else if (["/"].includes(pathname)) {
-      return router.replace("/home");
     }
+    // else if (["/"].includes(pathname)) {
+    //   return router.replace("/home");
+    // }
   }, [router, pathname, sessionToken, validateSessionToken]);
 
   return <>{children}</>;

@@ -50,7 +50,7 @@ const post = async (url: any, options: any) => {
 };
 
 async function loginApi(options: any) {
-  return await post(`//oven-api.hetscene.com/ai/web/login`, options);
+  return await post(`//ai-api.hetos.cn/ai/web/login`, options);
 }
 
 export function Loading(props: { noLogo?: boolean }) {
