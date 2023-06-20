@@ -22,7 +22,7 @@ export class ChatGPTApi implements LLMApi {
   // const chatStore = useChatStore();
   path(path: string): string {
     // let openaiUrl = useAccessStore.getState().openaiUrl;
-    let openaiUrl = "//ai-api.hetos.cn/";
+    let openaiUrl = "//oven-api.hetscene.com/";
     console.log(openaiUrl, "openaiUrl");
     if (openaiUrl.endsWith("/")) {
       openaiUrl = openaiUrl.slice(0, openaiUrl.length - 1);
@@ -31,6 +31,7 @@ export class ChatGPTApi implements LLMApi {
   }
 
   extractMessage(res: any) {
+    console.log(res, "res");
     return res.data.content ?? "";
     // return res ?? "";
   }
@@ -46,7 +47,7 @@ export class ChatGPTApi implements LLMApi {
     for (let num = 0; num < messages.length - 2; num++) {
       if (messages[num].role == "user") {
         history.push({
-          qusestion: messages[num].content,
+          question: messages[num].content,
           answer: messages[num + 1].content,
         });
         num = num + 2;
@@ -67,7 +68,7 @@ export class ChatGPTApi implements LLMApi {
     const requestPayload = {
       history: history,
       prompt: recentMessage,
-      useType: 3,
+      useType: useChatStore.getState().currentSession().userType,
       userAssistantId: 1,
     };
 
@@ -179,9 +180,6 @@ export class ChatGPTApi implements LLMApi {
 
         const resJson = await res.json();
         const message = this.extractMessage(resJson);
-        if (resJson.code == 10102) {
-          this.router.replace("/");
-        }
         console.log(resJson, message, "stream");
         options.onFinish(message);
       }

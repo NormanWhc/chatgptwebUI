@@ -46,7 +46,8 @@ export interface ChatSession {
   lastUpdate: number;
   lastSummarizeIndex: number;
   clearContextIndex?: number;
-
+  userType?: number;
+  deleteFlag?: boolean;
   mask: Mask;
 }
 
@@ -70,6 +71,44 @@ function createEmptySession(): ChatSession {
     lastUpdate: Date.now(),
     lastSummarizeIndex: 0,
 
+    mask: createEmptyMask(),
+  };
+}
+
+function createKedaxunfeiSession(): ChatSession {
+  return {
+    id: Date.now() + Math.random(),
+    topic: "讯飞星火大模型",
+    memoryPrompt: "",
+    messages: [],
+    stat: {
+      tokenCount: 0,
+      wordCount: 0,
+      charCount: 0,
+    },
+    lastUpdate: Date.now(),
+    lastSummarizeIndex: 0,
+    userType: 3,
+    deleteFlag: false,
+    mask: createEmptyMask(),
+  };
+}
+
+function createHETSession(): ChatSession {
+  return {
+    id: Date.now() + Math.random(),
+    topic: "和而泰大模型",
+    memoryPrompt: "",
+    messages: [],
+    stat: {
+      tokenCount: 0,
+      wordCount: 0,
+      charCount: 0,
+    },
+    lastUpdate: Date.now(),
+    lastSummarizeIndex: 0,
+    userType: 2,
+    deleteFlag: false,
     mask: createEmptyMask(),
   };
 }
@@ -108,7 +147,7 @@ function countMessages(msgs: ChatMessage[]) {
 export const useChatStore = create<ChatStore>()(
   persist(
     (set, get) => ({
-      sessions: [createEmptySession()],
+      sessions: [createHETSession(), createKedaxunfeiSession()],
       currentSessionIndex: 0,
       globalId: 0,
 
@@ -170,8 +209,16 @@ export const useChatStore = create<ChatStore>()(
       deleteSession(index) {
         const deletingLastSession = get().sessions.length === 1;
         const deletedSession = get().sessions.at(index);
-
+        const deleteFlag = get().currentSession().deleteFlag;
         if (!deletedSession) return;
+
+        if (deleteFlag == false) {
+          this.resetSession();
+          get().updateCurrentSession((session) => {
+            session.lastUpdate = Date.now();
+          });
+          return;
+        }
 
         const sessions = get().sessions.slice();
         sessions.splice(index, 1);
